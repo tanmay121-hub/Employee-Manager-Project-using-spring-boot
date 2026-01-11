@@ -8,45 +8,42 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
+@RequestMapping("/api")
 public class EmployeeController {
-    // 1. Define the dependency
+
     private final EmployeeService service;
-    // 2. Constructor Injection
+
     public EmployeeController(EmployeeService service) {
         this.service = service;
     }
 
-    //get
     @GetMapping("/emp")
     public List<Employee> getAllEmp(){
         return service.getAllEmployee();
     }
 
-    //for post
     @PostMapping("/emp/add")
-    public ResponseEntity<String> addEmp(@RequestBody Employee employee){
+    public ResponseEntity<?> addEmp(@RequestBody Employee employee){
         try {
-            service.addEmployee(employee);
+            Employee savedEmployee = service.addEmployee(employee);
+            return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
         } catch (ObjectOptimisticLockingFailureException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("The record was updated by another user. Please refresh and try again.");
+                    .body("Conflict: This employee record already exists or was modified.");
         }
-        return null;
     }
 
-    // update
-    @PutMapping("/emp/{id}")
-    public Employee updatedEmp(int id,Employee employee){
-        return service.updatedEmployee(id,employee);
+    // UPDATE
+    @PutMapping("/employees/{id}")
+    public Employee updateEmployee(@PathVariable int id, @RequestBody Employee employee) {
+        return service.updatedEmployee(id, employee);
     }
 
-    // delete
-    @DeleteMapping("/emp/{id}")
-    public String deleteEmp(int id){
+    // DELETE
+    @DeleteMapping("/employees/{id}")
+    public String deleteEmployee(@PathVariable int id) {
         service.deleteById(id);
         return "Employee with ID " + id + " has been deleted.";
-
     }
 }

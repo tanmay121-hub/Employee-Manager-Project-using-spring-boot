@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Employee {
-    @Id
+    @Id      // "Make a table called 'Employee' out of this class"
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
@@ -18,7 +18,7 @@ public class Employee {
 
     }
 
-    public Employee(int id,String name,String email){
+    public Employee(String name,String email){
         this.id = id;
         this.email = email;
         this.name = name;
